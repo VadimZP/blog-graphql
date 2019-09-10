@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import PropTypes from 'proptypes';
 import { Form, Button } from 'react-bootstrap';
 import { Formik, Field } from 'formik';
 import axios from 'axios';
 import * as Yup from 'yup';
+
+import CustomInput from 'components/shared/CustomInput';
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string()
@@ -20,34 +21,11 @@ const SignInSchema = Yup.object().shape({
     .matches(/^[a-zA-Z0-9_.-]*$/, { message: 'Password contains forbidden symbols' })
     .required('Required'),
   passwordConfirm: Yup.string()
-    .oneOf([Yup.ref('password')], 'Password confirm is required'),
+     .oneOf([Yup.ref('password'), null], "Passwords must match")
+     .required('Password confirm is required')
 });
 
-const CustomInput = ({
-  field,
-  form: { touched, errors },
-  ...props
-}) => (
-  <>
-    <Form.Control
-      {...field}
-      {...props}
-    />
-    {touched[field.name]
-      && errors[field.name] && <div className="error">{errors[field.name]}</div>}
-  </>
 
-);
-
-CustomInput.propTypes = {
-  field: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-  }).isRequired,
-  form: PropTypes.shape({ 
-    touched: PropTypes.bool.isRequired, 
-    errors: PropTypes.shape().isRequired,
-  }).isRequired,
-};
 
 export default class SignInForm extends Component {
   componentDidMount() {
@@ -93,7 +71,7 @@ export default class SignInForm extends Component {
             </Form.Group>
             <Form.Group>
               <Form.Label>Confirm Password</Form.Label>
-              <Field name="password-confirm" type="password" component={CustomInput} />
+              <Field name="passwordConfirm" type="password" component={CustomInput} />
             </Form.Group>
             <Button type="submit" block>Submit</Button>
           </Form>

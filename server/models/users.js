@@ -15,10 +15,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  createdEvents: [
+  createdPosts: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Event',
+      ref: 'Post',
     },
   ],
 });

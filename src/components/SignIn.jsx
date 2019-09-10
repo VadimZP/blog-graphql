@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import { Form, Button } from 'react-bootstrap';
 import { Formik, Field } from 'formik';
-import axios from 'axios';
 import * as Yup from 'yup';
 import { observer, inject } from 'mobx-react';
+
+import CustomInput from 'components/shared/CustomInput';
 
 const SignInSchema = Yup.object().shape({
   email: Yup.string()
@@ -15,35 +17,17 @@ const SignInSchema = Yup.object().shape({
     .required('Required'),
 });
 
-const CustomInput = ({
-  field, // { name, value, onChange, onBlur }
-  form: { touched, errors }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
-  ...props
-}) => (
-  <>
-   <Form.Control
-    {...field}
-    {...props}
-  />
-    {touched[field.name] &&
-      errors[field.name] && <div className="error">{errors[field.name]}</div>}
-  </>
- 
-);
-
 @inject('profileStore')
 @observer
 class SignInForm extends Component {
-  componentDidMount() {
-    console.log(this.props.profileStore.getEmail)
-  }
-
   handleSubmit = async (values) => {
-    const { profileStore } = this.props;
+    const { profileStore, history } = this.props;
 
     const loggedInUser = await profileStore.login(values.email)
-    console.log('loggedInUser:', loggedInUser)
-
+    if(loggedInUser) {
+      localStorage.setItem('email', loggedInUser);
+      history.push('/home');
+    }
   }
 
   render() {
@@ -65,7 +49,7 @@ class SignInForm extends Component {
             <Form.Label>Password</Form.Label>
             <Field name="password" type={'password'} component={CustomInput}/>
           </Form.Group>
-          <Button type="submit" block>Submit `${this.props.profileStore.getEmail}`</Button>
+          <Button type="submit" block>Submit {this.props.profileStore.getEmail}</Button>
         </Form>
         )}
       />
@@ -73,4 +57,4 @@ class SignInForm extends Component {
   }
 }
 
-export default SignInForm;
+export default withRouter(SignInForm);

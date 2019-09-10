@@ -8,7 +8,7 @@ class Auth extends Component {
       this.props.history.push('/signin');
       return;
     }
-    this.props.history.push('/');
+    this.props.history.push('/home');
   }
 
   render() {

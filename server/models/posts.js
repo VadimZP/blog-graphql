@@ -2,17 +2,9 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const eventSchema = new Schema({
-  title: {
+const postSchema = new Schema({
+  text: {
     type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
     required: true,
   },
   date: {
@@ -25,4 +17,4 @@ const eventSchema = new Schema({
   },
 });
 
-module.exports = mongoose.model('Event', eventSchema);
+module.exports = mongoose.model('Post', postSchema);

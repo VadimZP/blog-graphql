@@ -5,11 +5,12 @@ import mongoose from 'mongoose';
 import graphqlHttp from 'express-graphql';
 import { buildSchema } from 'graphql';
 import bcrypt from 'bcrypt';
-import Event from './models/events';
+import Post from './models/posts';
 import User from './models/users';
 
 require('babel-core/register');
 require('babel-polyfill');
+var ObjectId = require('mongodb').ObjectID;
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -21,16 +22,14 @@ app.use(
   '/graphql',
   graphqlHttp({
     schema: buildSchema(`
-        type Event {
+        type Post {
           _id: ID!
-          title: String!
-          description: String!
-          price: Float!
+          text: String!
           date: String!
           creator: User!
         }
 
-        input EventInput {
+        input PostInput {
           title: String!
           description: String!
           price: Float!
@@ -40,7 +39,7 @@ app.use(
           _id: ID!
           email: String!
           password: String
-          createdEvents: [Event!]
+          createdPosts: [Post!]
         }
         input UserInput {
           email: String!
@@ -50,11 +49,14 @@ app.use(
         input LoggingInput {
           email: String!
         }
+        input PostQueryInput {
+          userId: String!
+        }
         type RootQuery {
-            events: [Event!]!
+            posts: [Post!]!
         }
         type RootMutation {
-            createEvent(eventInput: EventInput): Event
+            createPost(postInput: PostInput): Post
             createUser(userInput: UserInput): User
             login(loggingInput: LoggingInput): User
         }
@@ -64,39 +66,41 @@ app.use(
         }
     `),
     rootValue: {
-      events: async () => {
-        let events;
+      posts: async (userId) => {
+        let posts;
         try {
-          events = await Event.find().populate('creator');
+          // posts = await Post.find({creator: ObjectId(`${userId}`) });
+          posts = await Post.find({creator: ObjectId("5d77f6d72603a81dffcac840") });
+          
         } catch (e) {
-          throw new Error('Something went wrong in events');
+          throw new Error('Something went wrong in posts');
         }
-        return events;
+        return posts;
       },
-      createEvent: async (args) => {
-        let event;
+      createPost: async (args) => {
+        let post;
         try {
-          event = new Event({
-            title: args.eventInput.title,
-            description: args.eventInput.description,
-            price: +args.eventInput.price,
-            date: new Date(args.eventInput.date),
+          post = new Post({
+            title: args.postInput.title,
+            description: args.postInput.description,
+            price: +args.postInput.price,
+            date: new Date(args.postInput.date),
             creator: '5d666d94066c4618efbf178c',
           });
 
-          event = await event.save();
+          post = await post.save();
 
           const foundUser = await User.findById('5d666d94066c4618efbf178c');
           if (!foundUser) {
             throw new Error('User not found');
           }
 
-          foundUser.createdEvents.push(event);
+          foundUser.createdPosts.push(post);
           foundUser.save();
         } catch (e) {
-          throw new Error('Something went wrong in createEvent');
+          throw new Error('Something went wrong in createPost');
         }
-        return event;
+        return post;
       },
       createUser: async (args) => {
         let user;
@@ -128,7 +132,7 @@ app.use(
           throw new Error(`Something went wrong in login: ${e.message}`);
         }
         return user;
-      }
+      },
     },
     graphiql: true,
   }),
