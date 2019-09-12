@@ -28,9 +28,6 @@ const SignInSchema = Yup.object().shape({
 
 
 export default class SignInForm extends Component {
-  componentDidMount() {
-  }
-
   handleSubmit = (values) => {
     const body = {
       query: `

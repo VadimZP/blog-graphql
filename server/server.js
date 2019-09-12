@@ -49,11 +49,8 @@ app.use(
         input LoggingInput {
           email: String!
         }
-        input PostQueryInput {
-          userId: String!
-        }
         type RootQuery {
-            posts: [Post!]!
+            posts(userId: String!): [Post!]!
         }
         type RootMutation {
             createPost(postInput: PostInput): Post
@@ -70,7 +67,7 @@ app.use(
         let posts;
         try {
           // posts = await Post.find({creator: ObjectId(`${userId}`) });
-          posts = await Post.find({creator: ObjectId("5d77f6d72603a81dffcac840") });
+          posts = await Post.find({creator: ObjectId('5d77f6d72603a81dffcac840') });
           
         } catch (e) {
           throw new Error('Something went wrong in posts');

@@ -4,16 +4,18 @@ import { observer, inject } from 'mobx-react';
 
 @inject('postsStore')
 @observer
-export default class Wall extends Component {
+class Wall extends Component {
   componentDidMount() {
-    const { postsStore: {posts}} = this.props;
-    console.log(posts)
+    // const { postsStore: {posts}} = this.props;
+    // console.log(posts)
   }
 
   render() {
-    console.log(posts)
+    // console.log(posts)
     return (
     <p>Wall</p>
     );
   }
 }
+
+export default Wall;

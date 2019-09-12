@@ -7,7 +7,7 @@ class ProfileStore {
   @observable username = ''
 
   @action
-  async login(email) {
+  async login (email) {
     let result;
     try {
       const body = {
